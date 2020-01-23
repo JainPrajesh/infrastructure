@@ -11,6 +11,10 @@
         region: "{{ region }}"
       register: keypair
 
+    - name: Copy EC2 Private Key locally for SSH into the instance
+      copy: content="{{ keypair.key.private_key }}" dest={{ ec2_key_directory }}key.ppk
+      when: keypair.changed == true
+
     #Creating and Launching EC2 instance
     - name: Create EC2 Instance
       ec2:
@@ -24,4 +28,34 @@
         count_tag:
           Name: jenkins
         exact_count: 1
+      register: ec2
+
+    - name: Add the newly created host so that we can further contact it
+      add_host:
+        name: "{{ item.public_ip }}"
+        groups: webservers
+        ansible_ssh_private_key_file:  "{{ ec2_key_location }}"
+      with_items: "{{ ec2.instances }}"
+
+    - name: Add tag to Instance(s)
+      ec2_tag:
+        resource: "{{ item.id }}"
+        region: "{{ region }}"
+        state: "present"
+      with_items: "{{ ec2.instances }}"
+      args:
+        tags:
+          Type: webserver
+
+    - name: Change file ownership, group and permissions
+      file:
+        path: "{{ ec2_key_location }}"
+        mode: '600'      
+
+    - name: Wait for SSH to come up
+      wait_for:
+        host: "{{ item.public_ip }}"
+        port: 22
+        state: started
+      with_items: "{{ ec2.instances }}"
 ...
