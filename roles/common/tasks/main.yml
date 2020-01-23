@@ -1,0 +1,11 @@
+---
+  #Including Network Infrastructure Creation Playbook
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  user: root
+  pre_tasks:
+    - include_vars: ../vars/variables.yml
+- import_playbook: Create_Network_Infra.yml
+- import_playbook: EC2_Instance_Launch.yml
+...

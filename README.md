@@ -5,6 +5,6 @@
 | Name | NEU ID | Email Address |
 | --- | --- | --- |
 |Jagmandeep Kaur | 001426439|kaur.j@husky.neu.edu |  | | |
-|Mayank Barua| | barua.m@husky.neu.edu|
+|Mayank Barua| 001475187| barua.m@husky.neu.edu|
 |Yogita Patil| 001435442|patil.yo@husky.neu.edu |
-|Prajesh Jain| | @husky.neu.edu|
+|Prajesh Jain| | Jain.pra@husky.neu.edu|
