@@ -1,0 +1,4 @@
+---
+#Main YML to execute all roles and playbook
+- include: ./roles/common/tasks/main.yml
+...
