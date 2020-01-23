@@ -47,6 +47,11 @@
         tags:
           Type: webserver
 
+    - name: Change file ownership, group and permissions
+      file:
+        path: "{{ ec2_key_location }}"
+        mode: '600'      
+
     - name: Wait for SSH to come up
       wait_for:
         host: "{{ item.public_ip }}"
