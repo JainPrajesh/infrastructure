@@ -27,4 +27,8 @@ keypair_name: "ec2_key_pair"
 ec2_key_location: "~/.ssh/key.ppk"
 
 JAVA_OPTIONS: "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
+
+# Route53 details
+hosted_zone: ""
+jenkins_subDomain: ""
 ...
