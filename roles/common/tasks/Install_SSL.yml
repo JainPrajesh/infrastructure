@@ -6,8 +6,6 @@
   vars:
     nginx_FileName: "jenkins"
     nginx_config_srcDirectory: "../Templates"
-    jenkins_subDomain: "jenkins.yoursubdomain"
-    certbot_email : "emailaddress"
 
   tasks:
     - name: Add Certbot repository
@@ -36,14 +34,14 @@
 
     - name: Copy nginx config file
       copy:
-        src: "{{nginx_config_srcDirectory}}/{{nginx_FileName}}.conf"
-        dest: "/etc/nginx/sites-available/{{ nginx_FileName }}.conf"
+        src: {{nginx_config_srcDirectory}}/{{nginx_FileName}}.conf
+        dest: /etc/nginx/sites-available/{{ nginx_FileName }}.conf
       become: yes
 
     - name: Create symbolic link
       file:
-        src: "/etc/nginx/sites-available/{{nginx_FileName}}.conf"
-        dest: "/etc/nginx/sites-enabled/{{nginx_FileName}}.conf"
+        src: /etc/nginx/sites-available/{{nginx_FileName}}.conf
+        dest: /etc/nginx/sites-enabled/{{nginx_FileName}}.conf
         mode: 0644
         state: link
 
@@ -57,7 +55,7 @@
         path: /etc/letsencrypt/live/{{ jenkins_subDomain }}/cert.pem
       register: letsencrypt_certificate
 
-    - name: Generate new letsencrypt certificate if none exists.
-      shell: "certbot --nginx --noninteractive --redirect --agree-tos --email {{ certbot_email }} -d {{ jenkins_subDomain }}"
+    - name: Generate new letsEncrypt certificate if none exists.
+      shell: "certbot --nginx --staging --noninteractive --redirect --agree-tos --email {{ certbot_email }} -d {{ jenkins_subDomain }}"
       when: letsencrypt_certificate.stat.exists == False
 ...
