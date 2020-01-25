@@ -9,4 +9,5 @@
 - import_playbook: Create_Network_Infra.yml
 - import_playbook: EC2_Instance_Launch.yml
 - import_playbook: Install_Jenkins.yml
+- import_playbook: Install_SSL.yml
 ...
