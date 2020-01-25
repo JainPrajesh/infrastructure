@@ -1,0 +1,10 @@
+---
+# tasks file for terminate
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  user: root
+  pre_tasks:
+    - include_vars: ../vars/main.yml
+- import_playbook: Terminate_Resources.yml
