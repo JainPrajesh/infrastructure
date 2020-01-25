@@ -60,4 +60,16 @@
         port: 22
         state: started
       with_items: "{{ ec2.instances }}"
+
+    - name: Route53 Create or Update subdomain value
+      route53:
+        state: present
+        zone: "{{ hosted_zone }}"
+        record: "{{ jenkins_subDomain }}"
+        type: A
+        ttl: 10
+        value:
+          - "{{ item.public_ip }}"
+        overwrite: yes
+      with_items: "{{ ec2.instances }}"
 ...
