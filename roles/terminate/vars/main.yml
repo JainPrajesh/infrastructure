@@ -1,4 +1,5 @@
 ---
+# vars file for terminate
 
 aws_access_key: ""
 aws_secret_key: ""
@@ -20,11 +21,3 @@ securitygroup_name: "Ansible Security Group"
 route_name: "Ansible Routing Table"
 
 ec2_tag: "WebServer"
-
-#The local path to which we would save our EC2 Private Key
-ec2_key_directory: "~/.ssh/"
-keypair_name: "ec2_key_pair"
-ec2_key_location: "~/.ssh/key.ppk"
-
-JAVA_OPTIONS: "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
-...

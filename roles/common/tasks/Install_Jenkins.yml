@@ -1,0 +1,47 @@
+---
+- hosts: webservers
+  remote_user: ubuntu
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Install add-apt-repostory
+      become: yes
+      apt: name=software-properties-common state=latest
+
+    - name: Add Oracle Java Repository
+      become: yes
+      apt_repository: repo='ppa:webupd8team/java'
+
+    - name: Accept Java 8 License
+      become: yes
+      debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+
+    - name: Java 8 should be installed
+      apt:
+        name: default-jdk
+        state: present
+
+    - name: Jenkins apt repository key is installed
+      apt_key: url=https://pkg.jenkins.io/debian-stable/jenkins.io.key state=present
+      become: yes
+
+    - name: Jenkins repo configuration
+      apt_repository: repo='deb https://pkg.jenkins.io/debian-stable binary/' state=present
+      become: yes
+
+    - name: Installing Jenkins
+      apt: name=jenkins update_cache=yes
+      become: yes
+
+    - name: Starting Jenkins
+      service: name=jenkins state=started
+
+    - name: Concatenate Jenkins Password
+      shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      changed_when: false
+      register: jenkinsPassword
+
+    - name: Print Jenkins Password
+      debug:
+        var: jenkinsPassword.stdout
+...
