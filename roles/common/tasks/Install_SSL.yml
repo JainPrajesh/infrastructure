@@ -33,15 +33,15 @@
         state: absent
 
     - name: Copy nginx config file
-      copy:
-        src: {{nginx_config_srcDirectory}}/{{nginx_FileName}}.conf
-        dest: /etc/nginx/sites-available/{{ nginx_FileName }}.conf
+      template:
+        src: "{{nginx_config_srcDirectory}}/{{nginx_FileName}}.conf"
+        dest: "/etc/nginx/sites-available/{{ nginx_FileName }}.conf"
       become: yes
 
     - name: Create symbolic link
       file:
-        src: /etc/nginx/sites-available/{{nginx_FileName}}.conf
-        dest: /etc/nginx/sites-enabled/{{nginx_FileName}}.conf
+        src: "/etc/nginx/sites-available/{{nginx_FileName}}.conf"
+        dest: "/etc/nginx/sites-enabled/{{nginx_FileName}}.conf"
         mode: 0644
         state: link
 
@@ -52,7 +52,7 @@
 
     - name: Check if letsencrypt certificate exists.
       stat:
-        path: /etc/letsencrypt/live/{{ jenkins_subDomain }}/cert.pem
+        path: "/etc/letsencrypt/live/{{ jenkins_subDomain }}/cert.pem"
       register: letsencrypt_certificate
 
     - name: Generate new letsEncrypt certificate if none exists.
