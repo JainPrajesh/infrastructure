@@ -1,0 +1,52 @@
+---
+- name: Add Certbot repository
+  become: yes
+  apt_repository: repo='ppa:certbot/certbot'
+
+- name: Install nginx
+  apt:
+    name: nginx
+    state: latest
+
+- name: Install certbot
+  apt:
+    name: python-certbot-nginx
+    state: latest
+
+- name: Remove sites-available default nginx
+  file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
+- name: Remove sites-enabled default nginx
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Copy nginx config file
+  template:
+    src: "{{nginx_config_srcDirectory}}/{{nginx_FileName}}.conf"
+    dest: "/etc/nginx/sites-available/{{ nginx_FileName }}.conf"
+  become: yes
+
+- name: Create symbolic link
+  file:
+    src: "/etc/nginx/sites-available/{{nginx_FileName}}.conf"
+    dest: "/etc/nginx/sites-enabled/{{nginx_FileName}}.conf"
+    mode: 0644
+    state: link
+
+- name: Start nginx
+  service:
+    name: nginx
+    state: started
+
+- name: Check if letsencrypt certificate exists.
+  stat:
+    path: "/etc/letsencrypt/live/{{ jenkins_subDomain }}/cert.pem"
+  register: letsencrypt_certificate
+
+- name: Generate new letsEncrypt certificate if none exists.
+  shell: "certbot --nginx --staging --noninteractive --redirect --agree-tos --email {{ certbot_email }} -d {{ jenkins_subDomain }}"
+  when: letsencrypt_certificate.stat.exists == False
+...
