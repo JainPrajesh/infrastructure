@@ -1,0 +1,5 @@
+---
+# vars file for ubuntu
+
+ nginx_FileName: "jenkins"
+ nginx_config_srcDirectory: "../Templates"
