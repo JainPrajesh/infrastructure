@@ -1,4 +1,19 @@
 ---
 #Main YML to execute all roles and playbook
-- include: ./roles/common/tasks/main.yml
+- hosts: local
+  gather_facts: false
+  user: root
+
+  roles:
+    - {role: 'common', tags: 'create'}
+
+    - {role: 'terminate', tags: 'delete'}
+    
+
+- hosts: webservers
+  gather_facts: false
+  remote_user: ubuntu
+  become: yes
+  roles:
+    - {role: 'ubuntu', tags: 'create'}
 ...

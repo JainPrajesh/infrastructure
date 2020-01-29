@@ -13,6 +13,15 @@
 
 Open terminal and run the ```ansible-playbook``` command in the below format with parameters
 
+To create the AWS infrastructure run following
+
 ```bash
-$ ansible-playbook -v playbook.yml --extra-vars "hosted_zone=value jenkins_subDomain=value certbot_email=value"
+$ ansible-playbook -i hosts-v site.yml --tags create --extra-vars "hosted_zone=value jenkins_subDomain=value certbot_email=value"
 ```
+
+To delete the AWS infrastructure run following
+
+```bash
+$ ansible-playbook -i hosts-v site.yml --tags delete --extra-vars "key=value value=value"
+```
+
