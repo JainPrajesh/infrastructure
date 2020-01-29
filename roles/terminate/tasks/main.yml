@@ -1,0 +1,8 @@
+---
+# tasks file for terminate
+
+- include: Terminate_Resources.yml  
+
+
+
+

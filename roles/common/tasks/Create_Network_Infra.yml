@@ -1,84 +1,81 @@
----
-### Creating AWS Network Infrastructure
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  user: root
-  tasks:
-    # First task : creating the VPC.
-    - name: Create VPC
-      ec2_vpc_net:
-        name: "{{ vpc_name }}"
-        cidr_block: "{{ vpc_cidr }}"
-        region: "{{ region }}"
-        state: "present"
-      register: vpc
+# First task : creating the VPC.
+- name: Create VPC
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_cidr }}"
+    region: "{{ region }}"
+    state: "present"
+  register: vpc
 
-    #Setting VPC ID in a variable
-    - name: Set VPC ID in variable
-      set_fact:
-        vpc_id: "{{ vpc.vpc.id }}"
+#Setting VPC ID in a variable
+- name: Set VPC ID in variable
+  set_fact:
+    vpc_id: "{{ vpc.vpc.id }}"
 
-    #Second task : Creating Subnet and Attaching it to the Internet Gateway.
-    - name: Creating and associate subnet to the VPC
-      ec2_vpc_subnet:
-        state: present
-        vpc_id: "{{ vpc_id }}"
-        region: "{{ region }}"
-        cidr: "{{ subnet_cidr }}"
-        map_public: yes
-        resource_tags:
-          Name: "{{ subnet_name }}"
-      register: subnet
+#Second task : Creating Subnet and Attaching it to the Internet Gateway.
+- name: Creating and associate subnet to the VPC
+  ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    cidr: "{{ subnet_cidr }}"
+    map_public: yes
+    resource_tags:
+      Name: "{{ subnet_name }}"
+  register: subnet
 
-    #Setting Subnet ID in a Varaible
-    - name: Set Public Subnet ID in variable
-      set_fact:
-        subnet_id: "{{ subnet.subnet.id }}"
+#Setting Subnet ID in a Varaible
+- name: Set Public Subnet ID in variable
+  set_fact:
+    subnet_id: "{{ subnet.subnet.id }}"
 
-    #Third task : Creating Internet Gateway
-    - name: create IGW
-      ec2_vpc_igw:
-        vpc_id: "{{ vpc_id }}"
-        region: "{{ region }}"
-        state: "present"
-        tags:
-          Name: "{{ igw_name }}"
-      register: igw
+#Third task : Creating Internet Gateway
+- name: create IGW
+  ec2_vpc_igw:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    state: "present"
+    tags:
+      Name: "{{ igw_name }}"
+  register: igw
 
-    #Setting InternetGateway ID in a variable
-    - name: Set Internet Gateway ID in variable
-      set_fact:
-        igw_id: "{{ igw.gateway_id }}"
+#Setting InternetGateway ID in a variable
+- name: Set Internet Gateway ID in variable
+  set_fact:
+    igw_id: "{{ igw.gateway_id }}"
 
-    #Fourth task : Creating Routing table and Attaching it to subnet and Internet Gateway
-    - name: Route IGW
-      ec2_vpc_route_table:
-        vpc_id: "{{ vpc_id }}"
-        region: "{{ region }}"
-        subnets:
-        - "{{ subnet.subnet.id }}"
-        routes:
-          - dest: 0.0.0.0/0
-            gateway_id: "{{ igw.gateway_id  }}"
-        tags:
-          Name: "{{ route_name }}"
+#Fourth task : Creating Routing table and Attaching it to subnet and Internet Gateway
+- name: Route IGW
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    subnets:
+    - "{{ subnet.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw.gateway_id  }}"
+    tags:
+      Name: "{{ route_name }}"
 
-    # Fifth task : Creating Security Group to allow SSH Anc TCP.
-    - name: Create Security Group
-      ec2_group:
-        name: "{{ securitygroup_name }}"
-        description: Ansible Security Group
-        vpc_id: "{{ vpc_id }}"
-        region: "{{ region }}"
-        rules:
-          - proto: tcp
-            ports:
-            - 80
-            cidr_ip: 0.0.0.0/0
-          - proto: tcp
-            ports:
-            - 22
-            cidr_ip: 0.0.0.0/0
-      register: security_group
+# Fifth task : Creating Security Group to allow SSH Anc TCP.
+- name: Create Security Group
+  ec2_group:
+    name: "{{ securitygroup_name }}"
+    description: Ansible Security Group
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    rules:
+      - proto: tcp
+        ports:
+        - 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        ports:
+        - 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        ports:
+          - 443
+        cidr_ip: 0.0.0.0/0
+  register: security_group
 ...
