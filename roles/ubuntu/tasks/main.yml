@@ -2,3 +2,4 @@
 # tasks file for ubuntu
 - include: Install_Jenkins.yml
 - include: Install_SSL.yml
+- include: Install_Docker.yml
